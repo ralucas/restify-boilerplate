@@ -2,11 +2,10 @@
 
 var mongoose = require('mongoose');
 var db = mongoose.connection;
-var Schema = mongoose.Schema;
 var _ = require('lodash');
 var Q = require('q');
 
-var Models = require('../models');
+var Models = require('../models/mongo');
 
 function MongoService(config) {
   this.config = config || {};
@@ -34,7 +33,7 @@ MongoService.prototype.updateOrCreate = function updateOrCreate(data, model) {
   return Q.npost(Models[model], 'findById', [data._id])
     .then(function(instance) {
       if (instance) {
-        instance(data);
+        _.extend(instance, data);
         return Q.nfcall(instance.save);
       } else {
         var modelInstance = new Models[model](data);

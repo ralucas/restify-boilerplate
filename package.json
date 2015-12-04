@@ -24,7 +24,9 @@
   "dependencies": {
     "bunyan": "^1.5.1",
     "constants": "0.0.2",
+    "factory-create": "0.0.6",
     "jsonwebtoken": "^5.4.1",
+    "knex": "^0.8.6",
     "lodash": "^3.10.1",
     "oauth": "^0.9.14",
     "restify": "^4.0.3"
