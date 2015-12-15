@@ -23,8 +23,8 @@ function SqlService(config) {
     };
   }
 
-  this.client = knex(this.config.client);
-
+  console.log('knexconf', this.config);
+  this.client = knex(this.config);
 }
 
 //TODO: This is untested...not sure if it will work

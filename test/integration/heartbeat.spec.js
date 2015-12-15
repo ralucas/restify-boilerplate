@@ -22,7 +22,7 @@ describe('GET /heartbeat', function() {
       .get('/heartbeat')
       .expect('Content-Type', /json/)
       .expect(function(res) {
-        res.body.message = 'heartbeat';
+        res.body.message = 'heartbeat - No Auth';
       })
       .end(function(err, res) {
         if (err) return done(err);

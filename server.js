@@ -1,18 +1,23 @@
 'use strict';
 
+if (process.env.NODE_ENV !== 'production'){
+  require('longjohn');
+}
+
 var restify = require('restify');
 
 var cluster = require('cluster');
 var numCPUs = require('os').cpus().length;
 var fs = require('fs');
+var config = require('./config');
 
 var routes = require('./routes');
 
 //TODO: Abstract console api to use bunyan logging
 
 var server = restify.createServer({
-  certificate: fs.readFileSync('config/certs/server.crt'),
-  key: fs.readFileSync('config/certs/server.key'),
+  //certificate: fs.readFileSync('config/certs/server.crt'),
+  //key: fs.readFileSync('config/certs/server.key'),
   name: 'MyApp'
 });
 
@@ -29,7 +34,7 @@ if (cluster.isMaster && process.env.NODE_ENV == 'production') {
   });
   
 } else {
-  server.listen(8080, function() {
+  server.listen(config.get('server.port'), function() {
     console.log('%s listening at %s', server.name, server.url);
   });
 }

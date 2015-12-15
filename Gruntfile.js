@@ -19,17 +19,8 @@ module.exports = function (grunt) {
       test: {
         options: {
           reporter: 'spec',
-          require: 'test/coverage/blanket',
           grep: grunt.option('grep'),
           colors: true
-        },
-        src: ['test/**/*.js']
-      },
-      coverage: {
-        options: {
-          reporter: 'html-cov',
-          quiet: true,
-          captureFile: 'test/coverage/coverage.html'
         },
         src: ['test/**/*.js']
       }

@@ -16,3 +16,4 @@ Restify Boilerplate
 - Build process and integration with CI (Jenkins)
 - More basic tests
 - Move to Yeoman
+- Start using [Stampit](https://github.com/stampit-org/stampit) for factory functions

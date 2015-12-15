@@ -11,7 +11,7 @@ function MongoService(config) {
   this.config = config || {};
 
   _.defaults(this.config, {
-    host: process.env.MONGO_URL
+    host: process.env.MONGO_HOST + process.env.MONGO_DB_NAME
   });
 
   var dbUrl = this.config.host;

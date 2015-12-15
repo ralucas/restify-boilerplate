@@ -1,0 +1,7 @@
+{
+  "database": {
+    "sql": {
+      "debug": true
+    }
+  }
+}

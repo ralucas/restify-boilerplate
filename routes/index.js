@@ -1,15 +1,23 @@
 'use strict';
 
-var api = {
-  handlers: require('./handlers'),
-  managers: require('./managers'),
-  services: require('./services')
+var heartbeat = require('./heartbeat');
+
+var handlers = require('../handlers');
+
+var mw = {
+  authenticate: require('./middleware/authenticate'),
+  authorize: require('./middleware/authorize')
 };
 
 module.exports = function(server) {
 
-  server.get('/heartbeat', function(req, res) {
-    res.send(200, {message: 'heartbeat'});
-  });
+  heartbeat(server);
+
+  server.post('/login',
+    mw.authorize.createToken,
+    mw.authenticate,
+    mw.authorize.createToken,
+    handlers.auth.login
+  );
 
 };
