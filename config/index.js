@@ -1,4 +1,5 @@
 var convict = require('convict');
+var path = require('path');
 
 // Define a schema
 var conf = convict({
@@ -20,6 +21,14 @@ var conf = convict({
       format: "port",
       default: 8080,
       env: "PORT"
+    }
+  },
+  certs: {
+    privateKey: {
+      doc: "The private key used for signing tokens",
+      format: String,
+      default: path.join(__dirname, "./certs/privateKey.key"),
+      env: "PRIVATE_KEY"
     }
   },
   database: {
@@ -81,8 +90,6 @@ var conf = convict({
 // Load environment dependent configuration
 var env = conf.get('env');
 conf.loadFile('./config/environment/' + env + '.json');
-
-console.log(conf.toString());
 
 // Perform validation
 conf.validate({strict: true});

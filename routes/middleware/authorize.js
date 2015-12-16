@@ -3,8 +3,10 @@
  * Utilizes JSON Web Tokens
  *
  **/
+var fs = require('fs');
 
 var jwt = require('jsonwebtoken');
+var config = require('../../config');
 
 module.exports = {
   /**
@@ -12,7 +14,10 @@ module.exports = {
    * @return {object} - json web token
    **/ 
   createToken: function createToken(req, res, next) {
-
+    var cert = fs.readFileSync(config.certs.privateKey);
+    var token = jwt.sign({ foo: 'bar' }, cert, { algorithm: 'RS256'}); 
+    req.user.token = token;
+    return next();
   },
 
   /**

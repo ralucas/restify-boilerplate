@@ -46,9 +46,13 @@ module.exports = function(server) {
   );
 
   server.post('/heartbeat/login',
-    mw.authenticate,
+    mw.authenticate.verify,
+    mw.authorize.createToken,
     function(req, res) {
-      res.send(302);
+      console.log(req.user);
+      res
+        .status(302)
+        .send({user: req.user});
     }
   );
 };

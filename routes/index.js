@@ -14,8 +14,8 @@ module.exports = function(server) {
   heartbeat(server);
 
   server.post('/login',
+    mw.authenticate.verify,
     mw.authorize.createToken,
-    mw.authenticate,
     mw.authorize.createToken,
     handlers.auth.login
   );
