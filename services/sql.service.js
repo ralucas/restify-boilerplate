@@ -36,7 +36,8 @@ SqlService.prototype.initialize = function initialize(models) {
   _.forEach(models, function(schema, model) {
     knexClient.schema.createTableIfNotExists(model, schema)
       .then(function(msg) {
-        console.log('CREATED: ', msg);
+        //TODO: Use Bunyan here
+        //console.log('CREATED: ', msg);
       });
   });
 };

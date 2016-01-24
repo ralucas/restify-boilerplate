@@ -10,11 +10,12 @@ gulp.task('mocha', function() {
     .pipe(mocha({
       reporter: 'spec',
       grep: yargs.grep || '' 
-    }))
-    .once('error', console.error.bind(console));
+    }));
+    //.once('error', console.error.bind(console));
 });
 
 gulp.task('test', ['mocha'], function() {
-  gulp.watch(['./test/**/**/*.spec.js'], ['mocha']);
+  gulp.watch(['./test/**/**/*.js'], ['mocha']);
 });
 
+gulp.task('default', ['test']);

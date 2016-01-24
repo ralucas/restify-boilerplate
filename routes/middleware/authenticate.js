@@ -11,15 +11,16 @@ var db = require('../../services').sqlService;
 //TODO: Handle the Oauth1.0a authentication flow here
 module.exports = {
   verify: function verify(req, res, next) {
-    if (!req.body || req.body.username || req.body.password) {
+    if (!req.body || !req.body.username || !req.body.password) {
       throw new Error('Missing required parameters');
     }
     // Here we are requiring that usernames be unique
     return db.findWhere('user', {where: {username: req.body.username}})
       .then(function(existingUser) {
+        console.log('exi', existingUser);
         if (!existingUser) {
           return res.status(401).json({
-            'message': 'Username or password is incorrect'
+            message: 'Username or password is incorrect'
           });
         }
         // Let's compare the password with what we've got
@@ -32,8 +33,6 @@ module.exports = {
            'message': 'Username or password is incorrect'
          });
        }
-       // Let's set some userData for use by the application
-       // Be sure to not include any potentially private data here
        var userData = _.pick(existingUser, 'firstname', 'lastname', 'username');
        // Let's hand them back an authorization token
        
@@ -42,6 +41,11 @@ module.exports = {
        //return res.status(200).redirect('/home', userData);
        req.user = userData;
        return next();
+     })
+     .catch(function(err) {
+       //TODO: Error handler
+       //res.status(500).json({message: err.message});
+       console.error(err);
      });
   },
 

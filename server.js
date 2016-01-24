@@ -9,6 +9,8 @@ var restify = require('restify');
 var cluster = require('cluster');
 var numCPUs = require('os').cpus().length;
 var fs = require('fs');
+var lusca = require('lusca');
+
 var config = require('./config');
 
 var routes = require('./routes');
@@ -20,6 +22,20 @@ var server = restify.createServer({
   //key: fs.readFileSync('config/certs/server.key'),
   name: 'MyApp'
 });
+
+// Use Lusca to prevent some common attacks
+server.use(lusca({
+  csrf: true,
+  csp: { 
+    policy: {
+      'default-src': '\'self\''
+    }
+  },
+  xframe: 'SAMEORIGIN',
+  p3p: 'ABCDEF',
+  hsts: {maxAge: 31536000, includeSubDomains: true, preload: true},
+  xssProtection: true
+}));
 
 routes(server);
 

@@ -14,7 +14,7 @@ var config = {
     password: 'test',
     database: 'test' 
   },
-  debug: true
+  debug: false 
 };
 
 beforeEach(function(done) {
