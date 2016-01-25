@@ -25,6 +25,7 @@ module.exports = {
    * @return {boolean}
    **/ 
   verifyToken: function verifyToken(req, res, next) {
-
+    var token = req.header('Authorization');
+    jwt.verify(token);
   }
 };
