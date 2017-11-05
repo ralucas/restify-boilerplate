@@ -29,10 +29,28 @@ var conf = convict({
       format: String,
       default: path.join(__dirname, "./certs/privateKey.key"),
       env: "PRIVATE_KEY"
+    },
+    publicKey: {
+      doc: "The public key used for verifying tokens",
+      format: String,
+      default: path.join(__dirname, "./certs/publicKey.key"),
+      env: "PUBLIC_KEY"
     }
   },
   database: {
+    name: {
+      "doc": "The Database Client in use.",
+      "format": ["mongo", "sql"],
+      "default": "mongo",
+      "env": "DB_NAME"
+    },
     mongo: {
+      client: {
+        "doc": "The Mongo Client.",
+        "format": ["mongo"],
+        "default": "mongo",
+        "env": "MONGO_CLIENT"
+      },
       host: {
         "doc": "MongoDB host url.",
         "format": String,

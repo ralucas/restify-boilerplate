@@ -4,15 +4,16 @@ if (process.env.NODE_ENV !== 'production'){
   require('longjohn');
 }
 
-var restify = require('restify');
-
+var fs = require('fs');
 var cluster = require('cluster');
 var numCPUs = require('os').cpus().length;
-var fs = require('fs');
+
+var restify = require('restify');
 var lusca = require('lusca');
+var logger = require('morgan');
 
 var config = require('./config');
-
+var mw = require('./middleware');
 var routes = require('./routes');
 
 //TODO: Abstract console api to use bunyan logging
@@ -23,20 +24,15 @@ var server = restify.createServer({
   name: 'MyApp'
 });
 
-// Use Lusca to prevent some common attacks
-server.use(lusca({
-  csrf: true,
-  csp: { 
-    policy: {
-      'default-src': '\'self\''
-    }
-  },
-  xframe: 'SAMEORIGIN',
-  p3p: 'ABCDEF',
-  hsts: {maxAge: 31536000, includeSubDomains: true, preload: true},
-  xssProtection: true
-}));
+const ignorePaths = [ '/heartbeat' ];
 
+// Middleware
+server.use(logger('dev'));
+// Use Lusca to prevent some common attacks
+server.use(mw.websec());
+server.use(mw.authorize(ignorePaths));
+
+// Routes
 routes(server);
 
 if (cluster.isMaster && process.env.NODE_ENV == 'production') {
