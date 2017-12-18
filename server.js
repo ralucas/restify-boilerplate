@@ -1,57 +1,86 @@
-'use strict';
 
 if (process.env.NODE_ENV !== 'production'){
   require('longjohn');
 }
 
-var fs = require('fs');
-var cluster = require('cluster');
-var numCPUs = require('os').cpus().length;
+const cluster = require('cluster');
+const numCPUs = require('os').cpus().length;
 
-var restify = require('restify');
-var lusca = require('lusca');
-var logger = require('morgan');
+const restify = require('restify');
+const logger = require('morgan');
 
-var config = require('./config');
-var mw = require('./middleware');
-var routes = require('./routes');
+const config = require('./config');
+const mw = require('./middleware');
+const routes = require('./routes');
+const WebSocketServer = require('./socket');
 
 //TODO: Abstract console api to use bunyan logging
 
-var server = restify.createServer({
-  //certificate: fs.readFileSync('config/certs/server.crt'),
-  //key: fs.readFileSync('config/certs/server.key'),
-  name: 'MyApp'
-});
+module.exports = class Server {
+  constructor() {
+    this._config = config.get('server');
 
-const ignorePaths = [ '/heartbeat' ];
-
-// Middleware
-server.use(logger('dev'));
-// Use Lusca to prevent some common attacks
-server.use(mw.websec());
-server.use(mw.authorize(ignorePaths));
-
-// Routes
-routes(server);
-
-if (cluster.isMaster && process.env.NODE_ENV == 'production') {
-  // Fork workers.
-  for (var i = 0; i < numCPUs; i++) {
-    cluster.fork();
+    this.server = restify.createServer({
+      //certificate: fs.readFileSync('config/certs/server.crt'),
+      //key: fs.readFileSync('config/certs/server.key'),
+      name: this._config.name
+    });
   }
-  cluster.on('exit', function(worker, code, signal) {
-    console.log('Worker ' + worker.process.pid + ' died:\n' +
-      'code: ' + code + ' signal: ' + signal);
-  });
-  
-} else {
-  server.listen(config.get('server.port'), function() {
-    console.log('%s listening at %s', server.name, server.url);
-  });
-}
 
-if (process.env.NODE_ENV !== 'production') {
-  module.exports = server;
-}
+  setMiddleware() {
+    // TODO: Move ignorePaths to config
+    const ignorePaths = [ '/heartbeat' ];
+
+    // Middleware
+    this.server.use(logger('dev'));
+    // Use Lusca to prevent some common attacks
+    this.server.use(mw.websec());
+    this.server.use(mw.authorize(ignorePaths));
+
+    return this.server;
+  }
+
+  setRoutes() {
+    routes(this.server);
+
+    return this.server;
+  }
+
+  startServer() {
+    this.setMiddleware();
+    this.setRoutes();
+
+    if (cluster.isMaster && process.env.NODE_ENV == 'production') {
+      // Fork workers.
+      for (var i = 0; i < numCPUs; i++) {
+        cluster.fork();
+      }
+      cluster.on('exit', (worker, code, signal) => {
+        console.log('Worker ' + worker.process.pid + ' died:\n' +
+          'code: ' + code + ' signal: ' + signal);
+      });
+
+    } else {
+      this.server.listen(this._config.port, () => {
+        console.log('%s listening at %s', this.server.name, this.server.url);
+      });
+    }
+    return this.server;
+  }
+
+  startSockets() {
+    this.wss = new WebSocketServer(this.server, config.get('socket'));
+    this.wss.handleConnections();
+  }
+
+  run() {
+    this.startServer();
+    this.startSockets();
+    return {
+      server: this.server,
+      wss: this.wss
+    };
+  }
+
+};
 

@@ -5,7 +5,8 @@
   "main": "server.js",
   "scripts": {
     "start": "./bin/server",
-    "test": "./node_modules/mocha/bin/mocha test/**/**/*.spec.js"
+    "test": "./node_modules/mocha/bin/mocha test/**/*.spec.js",
+    "lint": "./node_modules/.bin/eslint -c ./.eslintrc.yaml"
   },
   "repository": {
     "type": "git",
@@ -37,11 +38,18 @@
     "pg": "^4.4.3",
     "q": "^1.5.1",
     "redis": "^2.4.2",
-    "restify": "^4.0.3"
+    "restify": "^4.0.3",
+    "ws": "^3.3.3"
   },
   "devDependencies": {
     "blanket": "^1.2.1",
     "chai": "^1.9.2",
+    "eslint": "^4.13.1",
+    "eslint-config-standard": "^11.0.0-beta.0",
+    "eslint-plugin-import": "^2.8.0",
+    "eslint-plugin-node": "^5.2.1",
+    "eslint-plugin-promise": "^3.6.0",
+    "eslint-plugin-standard": "^3.0.1",
     "glob": "^6.0.1",
     "hippie": "^0.4.0",
     "jshint-stylish": "~0.1.3",

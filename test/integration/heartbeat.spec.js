@@ -1,9 +1,18 @@
-var expect = require('chai').expect;
-var request = require('supertest');
+const expect = require('chai').expect;
+const request = require('supertest');
 
-var server = require('../../server.js');
+const Server = require('../../server.js');
+const { server, wss } = new Server().run();
 
 describe('GET /heartbeat', function() {
+
+  after(function(done) {
+    server.close(function() {
+      wss.close(function() {
+        done();
+      })
+    });
+  });
   
   it('should respond with a 200 and a message', function(done) {
 

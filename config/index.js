@@ -1,5 +1,6 @@
-var convict = require('convict');
-var path = require('path');
+const path = require('path');
+const pkg = require('../package.json');
+const convict = require('convict');
 
 // Define a schema
 var conf = convict({
@@ -21,6 +22,12 @@ var conf = convict({
       format: "port",
       default: 8080,
       env: "PORT"
+    },
+    name: {
+      doc: "Name of the http server",
+      format: String,
+      default: pkg.name,
+      env: "SERVER_NAME"
     }
   },
   certs: {
@@ -35,6 +42,32 @@ var conf = convict({
       format: String,
       default: path.join(__dirname, "./certs/publicKey.key"),
       env: "PUBLIC_KEY"
+    }
+  },
+  socket: {
+    protocol: {
+      doc: "The default protocol for socket connections.",
+      format: String,
+      default: "ws",
+      env: "SOCKET_PROTOCOL"
+    },
+    host: {
+      doc: "The default host for socket connections.",
+      format: String,
+      default: "localhost",
+      env: "SOCKET_HOST"
+    },
+    port: {
+      doc: "The default path for socket connections.",
+      format: "port",
+      default: 8081,
+      env: "SOCKET_PORT"
+    },
+    path: {
+      doc: "The default path for socket connections.",
+      format: String,
+      default: "/ws",
+      env: "SOCKET_PATH"
     }
   },
   database: {
