@@ -8,7 +8,7 @@ var fs = require('fs');
 var jwt = require('jsonwebtoken');
 var config = require('../config');
 
-const pubKey = fs.readFileSync(config.get('certs.publicKey'));
+const pubKey = 'pubKey'; //fs.readFileSync(config.get('certs.publicKey'));
 
 module.exports = function authorize(ignorePaths) {
   return function verifyToken(req, res, next) {
