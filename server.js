@@ -7,6 +7,7 @@ const cluster = require('cluster');
 const numCPUs = require('os').cpus().length;
 
 const restify = require('restify');
+const plugins = restify.plugins;
 const logger = require('morgan');
 
 const config = require('./config');
@@ -33,6 +34,26 @@ module.exports = class Server {
 
     // Middleware
     this.server.use(logger('dev'));
+    this.server.pre(plugins.pre.context());
+    this.server.pre(plugins.pre.pause());
+    this.server.pre(plugins.pre.sanitizePath());
+    this.server.pre(plugins.pre.reqIdHeaders({ headers: ['x-request-id'] }));
+    this.server.pre(plugins.pre.strictQueryParams());
+    this.server.pre(plugins.pre.userAgentConnection());
+
+    // Restify plugins
+    this.server.use(plugins.acceptParser(this.server.acceptable));
+    this.server.use(plugins.authorizationParser());
+    this.server.use(plugins.dateParser());
+    this.server.use(plugins.queryParser());
+    // this.server.use(plugins.jsonp());
+    this.server.use(plugins.gzipResponse());
+    this.server.use(plugins.bodyParser());
+    this.server.use(plugins.requestExpiry({
+      startHeader: 'x-request-expiry-start',
+      timeoutHeader: 'x-request-expiry-time'
+    }));
+    this.server.use(plugins.requestLogger());
     // Use Lusca to prevent some common attacks
     this.server.use(mw.websec());
     this.server.use(mw.authorize(ignorePaths));
