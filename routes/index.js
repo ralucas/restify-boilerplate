@@ -1,11 +1,17 @@
-'use strict';
+const fs = require('fs');
+const path = require('path');
 
-var heartbeat = require('./heartbeat');
-
-var handlers = require('../handlers');
+const routes = fs.readdirSync(__dirname).reduce((acc, dir) => {
+  if (!dir.match(/index/)) {
+    acc[dir] = require(path.join(__dirname, dir));
+  }
+  return acc;
+}, {});
 
 module.exports = function(server) {
 
-  heartbeat(server);
+  Object.keys(routes).forEach(route => {
+    routes[route](server);
+  });
 
 };
